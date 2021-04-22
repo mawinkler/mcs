@@ -3,7 +3,8 @@ echo "Generating Environment File"
 echo "UID=$(id -u)" > .env
 echo "GID=$(id -g)" >> .env
 
-#echo "Building Multi Cloud Shell Container Image"
+rm -f home.tgz
+
 docker-compose build mcs
 
 IMAGE=$(docker images --format "{{.Repository}}" | grep mcs)
@@ -20,4 +21,5 @@ docker stop ${CONTAINER}
 echo "Populating workdir"
 mkdir -p workdir
 tar xpzf home.tgz --strip-components=2 -C ./workdir
-rm home.tgz
+
+rm -f home.tgz

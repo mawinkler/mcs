@@ -26,22 +26,30 @@ RUN \
     \
     # Add Google Repo
     export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | \
+        tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+        apt-key add - && \
     \
     # Add Azure Repo
-    curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null && \
+    curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
+        gpg --dearmor | \
+        tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null && \
     export AZ_REPO=$(lsb_release -cs) && \
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
+        tee /etc/apt/sources.list.d/azure-cli.list && \
     \
     # Add Helm Repo
-    curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
+    curl https://baltocdn.com/helm/signing.asc | \
+        apt-key add - && \
     apt-get install apt-transport-https --yes && \
-    echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list && \
+    echo "deb https://baltocdn.com/helm/stable/debian/ all main" | \
+        tee /etc/apt/sources.list.d/helm-stable-debian.list && \
     \
     # Install Packages
     apt update && \
-    apt install -y sudo vim nano jq figlet wget ssh git locales-all zip libffi6 libffi-dev libssl-dev ca-certificates apt-transport-https lsb-release gnupg && \
+    apt install -y sudo vim nano jq figlet wget ssh git locales-all zip libffi6 libffi-dev \
+        libssl-dev ca-certificates apt-transport-https lsb-release gnupg && \
     \
     # Google
     apt install -y google-cloud-sdk && \
@@ -51,7 +59,9 @@ RUN \
     apt install -y kubectl && \
     \
     # Eksctl
-    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && \
+    curl --silent \
+        --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | \
+        tar xz -C /tmp && \
     mv -v /tmp/eksctl /usr/local/bin && \
     \
     # Helm
@@ -67,6 +77,18 @@ RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/custom-users && \
 
 FROM base AS tools
 
+# root context
+RUN \
+    # AWS
+    curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
+    unzip awscliv2.zip && \
+    aws/install && \
+    rm -rf awscliv2.zip \
+        aws \
+        /usr/local/aws-cli/v2/*/dist/aws_completer \
+        /usr/local/aws-cli/v2/*/dist/awscli/data/ac.index \
+        /usr/local/aws-cli/v2/*/dist/awscli/examples
+
 # user context
 ARG user=mcs
 USER ${user}
@@ -81,7 +103,7 @@ RUN \
     pip3 install requests google-auth --user && \
     \
     # AWS
-    pip3 install awscli boto boto3 --user && \
+    pip3 install boto boto3 --user && \
     echo 'export PATH=~/.local/bin:$PATH' >> ~/.bashrc
 
 FROM tools

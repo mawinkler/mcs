@@ -147,31 +147,6 @@ function pipupdate {
 
 tc() { set ${*,,} ; echo ${*^} ; }
 
-function shell () {
-  kubectl run shell --restart=Never -it --image krisnova/hack:latest \
-  --rm --attach \
-  --overrides \
-        '{
-          "spec":{
-            "hostPID": true,
-            "containers":[{
-              "name":"scary",
-              "image": "krisnova/hack:latest",
-	      "imagePullPolicy": "Always",
-              "stdin": true,
-              "tty": true,
-              "command":["/bin/bash"],
-	      "nodeSelector":{
-		"dedicated":"master" 
-	      },
-              "securityContext":{
-                "privileged":true
-              }
-            }]
-          }
-        }'
-}
-
 # save / restore environment variables
 blacklisted () {
     case $1 in

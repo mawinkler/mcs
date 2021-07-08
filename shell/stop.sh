@@ -1,4 +1,4 @@
 #!/bin/bash
-CONTAINER=$(docker ps --format "{{.Names}}" | grep mcs)
+CONTAINER=$(docker ps --format "{{.ID}}" --filter "name=mcs")
 docker stop ${CONTAINER} && \
   docker rm $(docker ps -a --format "{{.Names}}" | grep mcs)

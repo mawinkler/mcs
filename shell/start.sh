@@ -1,5 +1,6 @@
 #!/bin/bash
-CONTAINER=$(docker ps --format "{{.Names}}" | grep mcs)
+MCS_VERSION=$(cat .MCS_VERSION)
+CONTAINER=$(docker ps --format "{{.ID}}" --filter "name=mcs")
 
 if [ ${CONTAINER} ]
 then

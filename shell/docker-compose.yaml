@@ -5,6 +5,7 @@ services:
 # Multi Cloud Shell
 # ##########################################################################
   mcs:
+    image: mcs:${MCS_VERSION}
     container_name: mcs
     build:
       context: .
@@ -16,6 +17,8 @@ services:
     environment:
       - TZ=Europe/Berlin
       - DEBIAN_FRONTEND=noninteractive
+    ports:
+      - 2222:22
     stdin_open: true
     tty: true
     restart: always

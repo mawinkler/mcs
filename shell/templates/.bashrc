@@ -157,6 +157,7 @@ blacklisted () {
 
 env_save () {
     local VAR
+    rm env.sh
     for VAR in $(compgen -A export); do
         blacklisted $VAR || \
             echo "export $VAR='${!VAR}'" >> "env.sh"
@@ -180,3 +181,5 @@ alias kgimg='kubectl get pods -o jsonpath="{..image}" | tr -s "[[:space:]]" "\n"
 source <(kubectl completion bash)
 
 export PATH=~/.local/bin:$PATH
+
+source ~/env.sh

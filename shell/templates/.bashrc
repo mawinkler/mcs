@@ -122,7 +122,7 @@ function scr {
          screen -xr Main
     else
          # name session "Main":
-         screen -S Main -s /bin/bash
+         screen -S Main -h 1000 -O -s /bin/bash
     fi
    }
 
@@ -157,10 +157,10 @@ blacklisted () {
 
 env_save () {
     local VAR
-    rm env.sh
+    rm -f ~/env.sh
     for VAR in $(compgen -A export); do
         blacklisted $VAR || \
-            echo "export $VAR='${!VAR}'" >> "env.sh"
+            echo "export $VAR='${!VAR}'" >> ~/env.sh
     done
 }
 
@@ -170,7 +170,7 @@ env_restore () {
         blacklisted $VAR || \
             unset $VAR
     done
-    source "env.sh"
+    source ~/env.sh
 }
 
 alias kchns='kubectl config set-context --current --namespace'$@
@@ -182,4 +182,7 @@ source <(kubectl completion bash)
 
 export PATH=~/.local/bin:$PATH
 
-source ~/env.sh
+if [ -f ~/env.sh ]; then
+    source ~/env.sh
+fi
+

@@ -53,7 +53,7 @@ RUN \
     apt update && \
     apt install -y sudo vim nano jq figlet wget ssh git locales-all zip libffi6 libffi-dev \
         libssl-dev ca-certificates apt-transport-https lsb-release gnupg \
-        iputils-ping net-tools dnsutils screen && \
+        iputils-ping net-tools dnsutils screen less groff && \
     \
     # Google
     apt install -y google-cloud-sdk && \
@@ -77,7 +77,12 @@ RUN \
     curl --silent \
         --location https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o stern && \
     chmod +x stern && \
-    mv stern /usr/local/bin/stern
+    mv stern /usr/local/bin/stern && \
+    \
+    # Kubebox
+    curl -Lo kubebox https://github.com/astefanutti/kubebox/releases/download/v0.9.0/kubebox-linux && \
+    chmod +x kubebox && \
+    mv kubebox /usr/local/bin/kubebox
 
 # No sudo prompts for us
 RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/custom-users && \
@@ -112,7 +117,15 @@ RUN \
     \
     # AWS
     pip3 install boto boto3 --user && \
-    echo 'export PATH=~/.local/bin:$PATH' >> ~/.bashrc
+    echo 'export PATH=~/.local/bin:$PATH' >> ~/.bashrc && \
+    \
+    # Krew
+    curl -fsSL "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz" -o ./krew.tar.gz && \
+    tar zxvf ./krew.tar.gz && \
+    KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" && \
+    "$KREW" install krew && \
+    rm -f ./krew.tar.gz ./krew-* && \
+    echo 'export PATH=~/.krew/bin:$PATH' >> ~/.bashrc
 
 FROM tools
 

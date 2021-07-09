@@ -7,16 +7,20 @@
   - [Tips & Tricks](#tips--tricks)
     - [Persistence](#persistence)
     - [Environment](#environment)
+    - [Buitin Toolset](#buitin-toolset)
+      - [kubebox](#kubebox)
+      - [krew](#krew)
     - [Aliases](#aliases)
 
 > **STILL WORK IN PROGRESS**
 
-This repository provides a container image providing a multi cloud shell for AWS, Google and Azure. The core components of that image are:
+A containerized multi cloud shell for AWS, Google and Azure with a special focus on Kubernetes. The core components of that image are:
 
 - `gcloud` cli for Google
 - `aws` cli for AWS
 - `az` cli for Azure
-- plus all additional tools and command line interfaces to manage kubernetes clusters
+
+plus all additional tools and command line interfaces to manage kubernetes clusters.
 
 ## Prerequisites
 
@@ -205,6 +209,45 @@ or
 ```sh
 # Restore environment from disk
 env_restore`
+```
+
+When recreating the mcs container with `./start.sh`, the last saved environment will be restored automagically.
+
+### Buitin Toolset
+
+The following tools are baked into the container:
+
+- Clouds
+  - aws
+  - az
+  - gcloud
+- Kubernetes Tools
+  - kubectl
+  - eksctl
+  - helm
+  - [stern](https://github.com/wercker/stern)
+  - [krew](https://github.com/kubernetes-sigs/krew)
+  - [kubebox](https://github.com/astefanutti/kubebox)
+  - [cadvisor](https://github.com/astefanutti/kubebox#cadvisor)
+  - [kube-hunter](https://github.com/aquasecurity/kube-hunter) *to come*
+  - [kubespy](https://github.com/pulumi/kubespy) *to come*
+
+#### kubebox
+
+Kubebox relies on cAdvisor to retrieve the resource usage metrics. When you're connected to a cluster run
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/astefanutti/kubebox/master/cadvisor.yaml
+```
+
+#### krew
+
+Nice tools amongst others are
+
+```sh
+kubectl krew install access-matrix
+
+kubectl krew install rbac-lookup
 ```
 
 ### Aliases

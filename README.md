@@ -12,7 +12,7 @@
       - [krew](#krew)
     - [Aliases](#aliases)
 
-> **STILL WORK IN PROGRESS**
+> **CONTINUOUSLY WORK IN PROGRESS**
 
 A containerized multi cloud shell for AWS, Google and Azure with a special focus on Kubernetes. The core components of that image are:
 

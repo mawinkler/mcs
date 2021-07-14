@@ -53,7 +53,7 @@ RUN \
     apt update && \
     apt install -y sudo vim nano jq figlet wget ssh git locales-all zip libffi6 libffi-dev \
         libssl-dev ca-certificates apt-transport-https lsb-release gnupg \
-        iputils-ping net-tools dnsutils screen less groff && \
+        iputils-ping net-tools dnsutils screen less groff bash-completion && \
     \
     # Google
     apt install -y google-cloud-sdk && \
@@ -71,8 +71,6 @@ RUN \
     # Helm
     apt-get install helm && \
     \
-    rm -rf /var/lib/apt/list/* && \
-    \
     # Stern
     curl --silent \
         --location https://github.com/wercker/stern/releases/download/1.11.0/stern_linux_amd64 -o stern && \
@@ -82,7 +80,9 @@ RUN \
     # Kubebox
     curl -Lo kubebox https://github.com/astefanutti/kubebox/releases/download/v0.9.0/kubebox-linux && \
     chmod +x kubebox && \
-    mv kubebox /usr/local/bin/kubebox
+    mv kubebox /usr/local/bin/kubebox && \
+    \
+    rm -rf /var/lib/apt/list/* && \
 
 # No sudo prompts for us
 RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/custom-users && \
@@ -134,7 +134,8 @@ ARG user=mcs
 USER ${user}
 WORKDIR /home/${user}
 
-RUN tar cpzf /tmp/home.tgz /home/${user}
+RUN tar cpzf /tmp/home.tgz /home/${user} && \
+    echo "cat /etc/motd" >> .bashrc
 
 WORKDIR /home/${user}
 

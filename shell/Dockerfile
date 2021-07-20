@@ -34,13 +34,15 @@ RUN \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
         apt-key add - && \
     \
-    # Add Azure Repo
+    # Add Azure Repos
     curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
         gpg --dearmor | \
         tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null && \
     export AZ_REPO=$(lsb_release -cs) && \
     echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
         tee /etc/apt/sources.list.d/azure-cli.list && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" | \
+        tee /etc/apt/sources.list.d/dotnetdev.list && \
     \
     # Add Helm Repo
     curl https://baltocdn.com/helm/signing.asc | \
@@ -55,9 +57,14 @@ RUN \
         libssl-dev ca-certificates apt-transport-https lsb-release gnupg \
         iputils-ping net-tools dnsutils screen less groff bash-completion && \
     \
+    # Azure
+    apt install -y azure-cli azure-functions-core-tools-3 && \
+    curl --silent --location https://aka.ms/downloadazcopy-v10-linux | tar xz -C /tmp && \
+    mv /tmp/azcopy_linux_amd64_10.11.0/azcopy /usr/bin && \
+    chmod 755 /usr/bin/azcopy && \
+    \
     # Google
     apt install -y google-cloud-sdk && \
-    apt install -y azure-cli && \
     \
     # Kubectl
     apt install -y kubectl && \
@@ -69,7 +76,7 @@ RUN \
     mv -v /tmp/eksctl /usr/local/bin && \
     \
     # Helm
-    apt-get install helm && \
+    apt install -y helm && \
     \
     # Stern
     curl --silent \
@@ -82,7 +89,7 @@ RUN \
     chmod +x kubebox && \
     mv kubebox /usr/local/bin/kubebox && \
     \
-    rm -rf /var/lib/apt/list/* && \
+    rm -rf /var/lib/apt/list/*
 
 # No sudo prompts for us
 RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/custom-users && \

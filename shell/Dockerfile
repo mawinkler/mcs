@@ -7,17 +7,15 @@ ARG group=mcs
 ARG uid
 ARG gid
 
+LABEL Description="This is the Multi Cloud Shell"
+
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone && \
     addgroup -gid ${gid} ${group} || true && \
     useradd -m -s /bin/bash -d /home/${user} -u ${uid} -g ${gid} ${user}
 
-ARG WORKDIR=/home/${user}
-
 COPY ["templates/.bash_aliases", "templates/.bashrc", "/home/${user}/"]
 
 RUN chown ${user}.${gid} /home/${user}/.bash_aliases /home/${user}/.bashrc
-
-LABEL Description="This is the Multi Cloud Shell"
 
 COPY templates/add-apt-repository /usr/bin
 
@@ -57,10 +55,33 @@ RUN \
         libssl-dev ca-certificates apt-transport-https lsb-release gnupg \
         iputils-ping net-tools dnsutils screen less groff bash-completion && \
     \
+    # No sudo prompts for us
+    echo "${user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/custom-users && \
+    echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
+    figlet "Multi Cloud Shell" > /etc/motd && \
+    \
+    # Cleanup
+    rm -rf /var/lib/apt/list/*
+
+FROM base AS tools
+ARG user=mcs
+# root context
+RUN \
+    # AWS
+    curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
+    unzip awscliv2.zip && \
+    aws/install && \
+    rm -rf awscliv2.zip \
+        aws \
+        /usr/local/aws-cli/v2/*/dist/aws_completer \
+        /usr/local/aws-cli/v2/*/dist/awscli/data/ac.index \
+        /usr/local/aws-cli/v2/*/dist/awscli/examples && \
+    \
     # Azure
     apt install -y azure-cli azure-functions-core-tools-3 && \
     curl --silent --location https://aka.ms/downloadazcopy-v10-linux | tar xz -C /tmp && \
     mv /tmp/azcopy_linux_amd64_10.11.0/azcopy /usr/bin && \
+    rm -rf /tmp/azcopy_linux_amd64_10.11.0 && \
     chmod 755 /usr/bin/azcopy && \
     \
     # Google
@@ -89,32 +110,12 @@ RUN \
     chmod +x kubebox && \
     mv kubebox /usr/local/bin/kubebox && \
     \
+    sudo systemctl enable ssh && \
+    \
+    # Cleanup
     rm -rf /var/lib/apt/list/*
 
-# No sudo prompts for us
-RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/custom-users && \
-    echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
-    figlet "Multi Cloud Shell" > /etc/motd
-
-
-FROM base AS tools
-
-# root context
-RUN \
-    # AWS
-    curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
-    unzip awscliv2.zip && \
-    aws/install && \
-    rm -rf awscliv2.zip \
-        aws \
-        /usr/local/aws-cli/v2/*/dist/aws_completer \
-        /usr/local/aws-cli/v2/*/dist/awscli/data/ac.index \
-        /usr/local/aws-cli/v2/*/dist/awscli/examples && \
-        \
-        sudo systemctl enable ssh
-
 # user context
-ARG user=mcs
 USER ${user}
 WORKDIR /home/${user}
 
@@ -135,7 +136,6 @@ RUN \
     echo 'export PATH=~/.krew/bin:$PATH' >> ~/.bashrc
 
 FROM tools
-
 # user context
 ARG user=mcs
 USER ${user}
@@ -143,8 +143,6 @@ WORKDIR /home/${user}
 
 RUN tar cpzf /tmp/home.tgz /home/${user} && \
     echo "cat /etc/motd" >> .bashrc
-
-WORKDIR /home/${user}
 
 EXPOSE 22
 

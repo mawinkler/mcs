@@ -13,7 +13,7 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezo
     addgroup -gid ${gid} ${group} || true && \
     useradd -m -s /bin/bash -d /home/${user} -u ${uid} -g ${gid} ${user}
 
-COPY ["templates/.bash_aliases", "templates/.bashrc", "templates/rapid-gke.sh", "/home/${user}/"]
+COPY ["templates/.bash_aliases", "templates/.bashrc", "templates/rapid-gke.sh", "templates/rapid-aks.sh", "templates/rapid-eks.sh", "/home/${user}/"]
 
 RUN chown ${user}.${gid} /home/${user}/.bash_aliases /home/${user}/.bashrc
 

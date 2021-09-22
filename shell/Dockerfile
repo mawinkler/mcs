@@ -13,7 +13,7 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezo
     addgroup -gid ${gid} ${group} || true && \
     useradd -m -s /bin/bash -d /home/${user} -u ${uid} -g ${gid} ${user}
 
-COPY ["templates/.bash_aliases", "templates/.bashrc", "/home/${user}/"]
+COPY ["templates/.bash_aliases", "templates/.bashrc", "templates/rapid-gke.sh", "/home/${user}/"]
 
 RUN chown ${user}.${gid} /home/${user}/.bash_aliases /home/${user}/.bashrc
 
@@ -52,7 +52,7 @@ RUN \
     # Install Packages
     apt update && \
     apt install -y sudo vim nano jq figlet wget ssh git locales-all zip libffi6 libffi-dev \
-        libssl-dev ca-certificates apt-transport-https lsb-release gnupg \
+        libssl-dev ca-certificates apt-transport-https lsb-release gnupg apache2-utils \
         iputils-ping net-tools dnsutils screen less groff bash-completion && \
     \
     # No sudo prompts for us

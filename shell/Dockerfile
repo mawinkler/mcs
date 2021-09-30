@@ -79,8 +79,8 @@ RUN \
     \
     # Azure
     apt install -y azure-cli azure-functions-core-tools-3 && \
-    curl --silent --location https://aka.ms/downloadazcopy-v10-linux | tar xz -C /tmp && \
-    mv /tmp/azcopy_linux_amd64_10.11.0/azcopy /usr/bin && \
+    curl --silent --location https://aka.ms/downloadazcopy-v10-linux | tar xz --strip-components=1 -C /tmp && \
+    mv /tmp/azcopy /usr/bin && \
     rm -rf /tmp/azcopy_linux_amd64_10.11.0 && \
     chmod 755 /usr/bin/azcopy && \
     \
@@ -110,7 +110,7 @@ RUN \
     chmod +x kubebox && \
     mv kubebox /usr/local/bin/kubebox && \
     \
-    sudo systemctl enable ssh && \
+    # sudo systemctl enable ssh && \
     \
     # Cleanup
     rm -rf /var/lib/apt/list/*

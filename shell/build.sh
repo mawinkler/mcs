@@ -1,28 +1,29 @@
 #!/bin/bash
 MCS_VERSION=$(cat .MCS_VERSION)
 
-echo "Generating Environment File"
-echo "UID=$(id -u)" > .env
-echo "GID=$(id -g)" >> .env
-echo "MCS_VERSION=${MCS_VERSION}" >> .env
-
-echo "Building mcs version ${MCS_VERSION}"
+printf '%s\n' "Building mcs version ${MCS_VERSION}"
 rm -f home.tgz
 
-docker-compose build mcs
+# docker-compose build mcs
+docker build \
+    -t mcs:${MCS_VERSION} \
+    --build-arg uid=$(id -u) \
+    --build-arg gid=$(id -g) \
+    --build-arg version=${MCS_VERSION} \
+    .
 
 IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "mcs:${MCS_VERSION}")
-echo "Starting Multi Cloud Shell Container from image ${IMAGE}"
-docker run -d --rm --name=mcs ${IMAGE} -c "/bin/sleep 60"
+printf '%s\n' "Starting Multi Cloud Shell Container from image ${IMAGE}"
+docker run -d --rm --name=mcs-${MCS_VERSION} ${IMAGE} -c "/bin/sleep 60"
 
-echo "Fetch Home Directory from Container"
-CONTAINER=$(docker ps --format "{{.ID}}" --filter "name=mcs")
+printf '%s\n' "Fetch Home Directory from Container"
+CONTAINER=$(docker ps --format "{{.ID}}" --filter "name=mcs-${MCS_VERSION}")
 docker cp ${CONTAINER}:/tmp/home.tgz .
 
-echo "Stopping Multi Cloud Shell Container"
+printf '%s\n' "Stopping Multi Cloud Shell Container"
 docker stop ${CONTAINER}
 
-echo "Populating workdir"
+printf '%s\n' "Populating workdir"
 mkdir -p workdir
 tar xpzf home.tgz --strip-components=2 -C ./workdir
 

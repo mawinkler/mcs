@@ -12,37 +12,34 @@
       - [krew](#krew)
     - [Aliases](#aliases)
 
-> **CONTINUOUSLY WORK IN PROGRESS**
-
-A containerized multi cloud shell for AWS, Google and Azure with a special focus on Kubernetes. The core components of that image are:
+A containerized multi cloud shell for AWS, Google and Azure with a special focus on Kubernetes. The core components are:
 
 - `gcloud` cli for Google
 - `aws` cli for AWS
 - `az` cli for Azure
 
-plus all additional tools and command line interfaces to manage kubernetes clusters.
+Plus all additional tools and command line interfaces to manage kubernetes clusters.
 
 ## Prerequisites
 
-Docker & Docker-Compose
+- Docker
 
 Tested with
 
 - Linux,
 - MacOS X and
-- AWS
+- AWS Cloud9
 
 ## Getting Started
 
 <details>
 <summary>Linux</summary>
 
-Requirements for Docker & Docker-Compose
+Docker
 
 ```sh
 curl -fsSL get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 sudo usermod -aG docker `whoami` && sudo service docker start
-sudo curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 </summary>
@@ -51,8 +48,7 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-c
 <details>
 <summary>MacOS X</summary>
 
-
-Requirements Docker for Desktop
+Docker for Desktop
 
 <https://download.docker.com/mac/stable/Docker.dmg>
 
@@ -88,19 +84,6 @@ Cloud9 Configuration:
 - Instance type: >= t3.medium
 - Platform: Ubuntu Server 18.04-LTS
 
-From within the Cloud9 shell to a
-
-```sh
-sudo apt install -y docker-compose
-```
-
-Now clone the devops-training
-
-```sh
-git clone https://github.com/mawinkler/mcs.git
-cd devops-training
-```
-
 </summary>
 </details>
 
@@ -119,7 +102,8 @@ NOT SUPPORTED, FULLSTOP.
 Build and run it:
 
 ```shell
-cd shell
+git clone https://github.com/mawinkler/mcs.git
+cd mcs/shell
 ```
 
 If using AWS Cloud9 as the base, you likely need to increase the disk size of the Cloud9 instance depending on the type you chose above. Execute:
@@ -133,6 +117,13 @@ Now build and start
 ```sh
 ./build.sh
 ./start.sh
+```
+
+You can access `mcs` with ssh:
+
+```sh
+# Password: mcs
+ssh -p 2222 mcs@YOUR-IP
 ```
 
 <details>
@@ -193,7 +184,7 @@ and follow the process.
 
 Persistence is provided by a mapped working directory on your docker host. That means, you can easily destroy and rebuild the image whenever needed. If you want to move your setup, simply tar / zip your local repo directory including the workdir.
 
-MCS is designed to allow file read / write not only from within the container, but also from your host running the shell. So, simply use your local editor of choice and modify any file within the workdir as you like. All changes will be immedeately available within the mcs.
+`mcs` is designed to allow file read / write not only from within the container, but also from your host running the shell. So, simply use your local editor of choice and modify any file within the workdir as you like. All changes will be immedeately available within the `mcs`.
 
 ### Environment
 
@@ -211,7 +202,7 @@ or
 env_restore`
 ```
 
-When recreating the mcs container with `./start.sh`, the last saved environment will be restored automagically.
+When restarting the `mcs` container with `./start.sh`, the last saved environment will be restored automagically.
 
 ### Buitin Toolset
 
@@ -246,7 +237,6 @@ Nice tools amongst others are
 
 ```sh
 kubectl krew install access-matrix
-
 kubectl krew install rbac-lookup
 ```
 

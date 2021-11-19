@@ -2,7 +2,7 @@
 
 # Exports
 export APP_NAME=playground
-export CLUSTER_NAME=aks_playground
+export CLUSTER_NAME=aks-playground
 
 az group create --name ${APP_NAME} --location westeurope
 az aks create \

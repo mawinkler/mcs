@@ -1,12 +1,17 @@
 #!/bin/bash
 MCS_VERSION=$(cat .MCS_VERSION)
-CONTAINER=$(docker ps --format "{{.ID}}" --filter "name=mcs")
+PORT=2222
 
-if [ ${CONTAINER} ]
-then
-  echo Attaching to Running Instance
-  docker attach ${CONTAINER}
-else
-  echo Creating new Instance
-  docker-compose run mcs
-fi
+printf '%s\n' "Starting Multi Cloud Shell"
+docker run \
+  --detach \
+  --rm \
+  --name=mcs-${MCS_VERSION} \
+  --env TZ=Europe/Berlin \
+  --env DEBIAN_FRONTEND=noninteractive \
+  --publish ${PORT}:22 \
+  --volume $(pwd)/workdir:/home/mcs \
+  mcs:${MCS_VERSION}
+
+printf '%s\n' "Connect:  ssh -p ${PORT} mcs@$(hostname -I | awk '{print $1}')"
+printf '%s\n' "Password: mcs"

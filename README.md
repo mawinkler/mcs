@@ -20,6 +20,8 @@ A containerized multi cloud shell for AWS, Google and Azure with a special focus
 
 Plus all additional tools and command line interfaces to manage kubernetes clusters.
 
+On a very high level, you're building your personal shell with all the tools deployed whereby the shell is running containerized in detached mode. To work with the shell, you simply ssh into it. Multiple simultanious connections are supported.
+
 ## Prerequisites
 
 - Docker

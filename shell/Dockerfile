@@ -202,6 +202,12 @@ RUN \
 # Root context
 USER root
 
+RUN \
+    # Install docker
+    apt-get update && \
+    apt-get install docker.io -y && \
+    usermod -aG docker mcs
+
 EXPOSE 22
 
 # Start ssh daemon

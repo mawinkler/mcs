@@ -175,7 +175,7 @@ env_restore () {
 
 alias kchns='kubectl config set-context --current --namespace'$@
 alias keti='kubectl exec -it'$@
-alias kshell='kubectl run -it --image=ubuntu kshell --restart=Never --labels=kshell=true --rm -- /bin/bash'
+alias kshell='kubectl run -it --image=ubuntu kshell --restart=Never --labels=kshell=true --rm -- /bin/bash'$@
 alias kgimg='kubectl get pods -o jsonpath="{..image}" | tr -s "[[:space:]]" "\n" | sort -u'
 
 source <(kubectl completion bash)

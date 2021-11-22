@@ -11,6 +11,7 @@ docker run \
   --env DEBIAN_FRONTEND=noninteractive \
   --publish ${PORT}:22 \
   --volume $(pwd)/workdir:/home/mcs \
+  --volume /var/run/docker.sock:/var/run/docker.sock \
   mcs:${MCS_VERSION}
 
 printf '%s\n' "Connect:  ssh -p ${PORT} mcs@$(hostname -I | awk '{print $1}')"

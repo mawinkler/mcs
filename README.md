@@ -158,7 +158,7 @@ export AWS_REGION=$(cat ~/.aws/config | sed -n 's/^region\s=\s\(.*\)/\1/p')
 Authenticate to Azure via
 
 ```sh
-az login
+az login --use-device-code
 ```
 
 and follow the process.

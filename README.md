@@ -12,7 +12,11 @@
       - [krew](#krew)
     - [Aliases](#aliases)
 
-A containerized multi cloud shell for AWS, Google and Azure with a special focus on Kubernetes. The core components are:
+A containerized multi cloud shell for AWS, Google and Azure with a special focus on Kubernetes.
+
+![MCS Demo](images/kapture-20211203.gif)
+
+The core components are:
 
 - `gcloud` cli for Google
 - `aws` cli for AWS
